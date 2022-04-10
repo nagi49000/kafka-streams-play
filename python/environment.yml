@@ -1,0 +1,7 @@
+name: kafka-env
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - kafka-python>=2.0.2
+  - python>=3.9.7
