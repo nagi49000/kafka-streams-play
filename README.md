@@ -1,20 +1,17 @@
 # kafka-play
 
-Play with kafka to make some simple data pipelines
+Play with kafka to make some kafka streams. The kafka server is a bitnami docker image.
 
-The kafka server is a bitnami docker image, and can be launched with docker-compose.
+There is a docker-compose.yml in services, containing:
+  - a kafka server
+  - a zookeeper server (for kafka)
+  - a python producer
+  - a python consumer
 
-Simple producers and consumers in python have been built. The environment for them can be created using conda
+The demo can be run with
 ```
-conda env create -f environment.yml
+# in services
+docker-compose build
+docker-compose up
 ```
-
-The kafka consumer will run forever, and can be run in a terminal
-```
-python consumer.py
-```
-
-The kafka producer injects a small number of messages over time, and then finishes. It can be run in the terminal
-```
-python producer.py
-```
+The producing and consuming of messages should be visible in the log.

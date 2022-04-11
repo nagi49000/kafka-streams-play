@@ -1,6 +1,7 @@
 version: "2"
 
 services:
+
   zookeeper:
     image: docker.io/bitnami/zookeeper:latest
 #    ports:
@@ -9,11 +10,12 @@ services:
       - "zookeeper_data:/bitnami"
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
+
   kafka:
     image: docker.io/bitnami/kafka:latest
     ports:
-#      - "9092:9092"
-#      - "9093:9093"
+      - "9092:9092"
+      - "9093:9093"
       - "29092:29092"
     volumes:
       - "kafka_data:/bitnami"
@@ -25,6 +27,22 @@ services:
       - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
     depends_on:
       - zookeeper
+
+  pyproducer-time:
+    build:
+      context: producer_time
+    depends_on:
+      - kafka
+    links:
+      - "kafka:kafka-in1-url"
+
+  pyconsumer-time:
+    build:
+      context: consumer_time
+    depends_on:
+      - kafka
+    links:
+      - "kafka:kafka-in1-url"
 
 volumes:
   zookeeper_data:
