@@ -1,7 +1,7 @@
 # This Dockerfile has two required ARGs to determine which base image
 # to use for the JDK and which sbt version to install.
 
-ARG OPENJDK_TAG=8u322-jre-bullseye
+ARG OPENJDK_TAG=8u322-jre
 ARG OPENJDK_IMAGE=openjdk:${OPENJDK_TAG}
 
 FROM ${OPENJDK_IMAGE} AS builder
