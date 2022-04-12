@@ -5,10 +5,13 @@ ThisBuild / version          := "0.1.0-SNAPSHOT"
 ThisBuild / organization     := "com.kafkastreamsplay"
 ThisBuild / organizationName := "kafkastreamsplay"
 
+val kafkaVersion = "3.1.0"
+
 lazy val root = (project in file("."))
   .settings(
     name := "processor",
-    libraryDependencies += scalaTest % Test
+    libraryDependencies += scalaTest % Test,
+    libraryDependencies += "org.apache.kafka" %% "kafka-streams-scala" % kafkaVersion
   )
 
 // Uncomment the following for publishing to Sonatype.
@@ -23,6 +26,15 @@ ThisBuild / scmInfo := Some(
     "scm:git@github.com/nagi49000/kafka-streams-play.git"
   )
 )
+
+// dirty workaround for deduplication in Jackson
+assembly / assemblyMergeStrategy := {
+      case "module-info.class" => MergeStrategy.discard
+      case x =>
+        val oldStrategy = (assembly / assemblyMergeStrategy).value
+        oldStrategy(x)
+    }
+
 // ThisBuild / developers := List(
 //   Developer(
 //     id    = "Your identifier",

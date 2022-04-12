@@ -10,7 +10,7 @@ n_connect_retry = 20
 
 while n_connect_retry > 0:
     try:
-        json_consumer = KafkaConsumer("json-time-topic",
+        json_consumer = KafkaConsumer("json-edited-time-topic",
                                       bootstrap_servers=["kafka-in1-url:9092"],
                                       value_deserializer=lambda m: json.loads(m.decode('ascii')),
                                       enable_auto_commit=False,

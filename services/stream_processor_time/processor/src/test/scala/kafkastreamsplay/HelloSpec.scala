@@ -1,4 +1,4 @@
-package example
+package kafkastreamsplay
 
 import org.scalatest._
 
