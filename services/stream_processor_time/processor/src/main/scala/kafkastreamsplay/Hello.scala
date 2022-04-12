@@ -7,7 +7,8 @@ import org.apache.kafka.streams.kstream.Materialized
 import org.apache.kafka.streams.scala.ImplicitConversions._
 import org.apache.kafka.streams.scala._
 import org.apache.kafka.streams.scala.kstream._
-import org.apache.kafka.streams.{KafkaStreams, StreamsConfig}
+import org.apache.kafka.streams.{KafkaStreams, StreamsConfig, Topology}
+import org.slf4j.{Logger, LoggerFactory}
 
 import Serdes._
 
@@ -20,6 +21,8 @@ trait Greeting {
 }
 
 object TimestampEditApp extends App {
+  val log: Logger = LoggerFactory.getLogger(TimestampEditApp.getClass)
+
   val props: Properties = {
     val p = new Properties()
     p.put(StreamsConfig.APPLICATION_ID_CONFIG, "timestamp-edit-application")
@@ -31,7 +34,10 @@ object TimestampEditApp extends App {
   val textLines: KStream[String, String] = builder.stream[String, String]("json-time-topic")
   textLines.to("json-edited-time-topic")
 
-  val streams: KafkaStreams = new KafkaStreams(builder.build(), props)
+  val topology: Topology = builder.build()
+  val streams: KafkaStreams = new KafkaStreams(topology, props)
+  log.info(topology.describe().toString())
+  log.info(props.toString())
   streams.start()
 
   sys.ShutdownHookThread {

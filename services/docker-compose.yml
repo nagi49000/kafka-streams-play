@@ -44,6 +44,14 @@ services:
     links:
       - "kafka:kafka-in1-url"
 
+  scalastream-time-edit:
+    build:
+      context: stream_processor_time
+    depends_on:
+      - kafka
+    links:
+      - "kafka:kafka-in1-url"
+
 volumes:
   zookeeper_data:
     driver: local

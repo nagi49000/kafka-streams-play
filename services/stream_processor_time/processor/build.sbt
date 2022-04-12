@@ -6,12 +6,18 @@ ThisBuild / organization     := "com.kafkastreamsplay"
 ThisBuild / organizationName := "kafkastreamsplay"
 
 val kafkaVersion = "3.1.0"
+val slf4jVersion = "1.7.36"
+
+val streamDependencies = Seq(
+  "org.apache.kafka" %% "kafka-streams-scala" % kafkaVersion,
+  "org.slf4j" % "slf4j-simple" % slf4jVersion
+)
 
 lazy val root = (project in file("."))
   .settings(
     name := "processor",
     libraryDependencies += scalaTest % Test,
-    libraryDependencies += "org.apache.kafka" %% "kafka-streams-scala" % kafkaVersion
+    libraryDependencies ++= streamDependencies
   )
 
 // Uncomment the following for publishing to Sonatype.

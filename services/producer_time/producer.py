@@ -2,6 +2,7 @@ from kafka import KafkaProducer
 from kafka.errors import KafkaError
 from datetime import datetime
 from time import sleep
+from os import getenv
 import logging
 import json
 
@@ -24,7 +25,7 @@ while n_connect_retry > 0:
         sleep(1.5)
 
 # launch a limited number of messages
-for _ in range(10):
+for _ in range(30):
     message = {"time": datetime.utcnow().isoformat() + "Z"}
     producer.send("json-time-topic", message)
     logging.info(f"sent message {message}")
