@@ -1,10 +1,10 @@
 # This Dockerfile has two required ARGs to determine which base image
 # to use for the JDK and which sbt version to install.
 
-ARG OPENJDK_TAG=8u322-jre
-ARG OPENJDK_IMAGE=openjdk:${OPENJDK_TAG}
+ARG OPENJDK_TAG_JRE=8u322-jre
+ARG OPENJDK_TAG_JDK=8u322-jdk
 
-FROM ${OPENJDK_IMAGE} AS builder
+FROM openjdk:${OPENJDK_TAG_JDK} AS builder
 
 ARG SBT_VERSION=1.6.2
 
@@ -24,7 +24,7 @@ RUN sbt test && \
 # uncomment to run app in builder
 # RUN java -jar /build/target/scala-2.12/processor-assembly-0.1.0-SNAPSHOT.jar
 
-FROM ${OPENJDK_IMAGE}
+FROM openjdk:${OPENJDK_TAG_JRE}
 
 WORKDIR app/
 COPY --from=builder /build/target/scala-2.12/processor-assembly-0.1.0-SNAPSHOT.jar ./

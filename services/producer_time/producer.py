@@ -3,6 +3,7 @@ from kafka.errors import KafkaError
 from datetime import datetime
 from time import sleep
 from os import getenv
+from random import randint
 import logging
 import json
 
@@ -26,7 +27,12 @@ while n_connect_retry > 0:
 
 # launch a limited number of messages
 for _ in range(30):
-    message = {"time": datetime.utcnow().isoformat() + "Z"}
+    message = {
+        "time": datetime.utcnow().isoformat() + "Z",
+        "integers": {
+            "randint": randint(0,20)
+        }
+    }
     producer.send("json-time-topic", message)
     logging.info(f"sent message {message}")
     sleep(3)
