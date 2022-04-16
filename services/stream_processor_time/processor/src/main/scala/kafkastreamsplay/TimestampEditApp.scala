@@ -1,16 +1,23 @@
 package kafkastreamsplay
 
+import scala.beans.BeanProperty
+
 import java.util.Properties
 import java.time.Duration
 
-import org.apache.kafka.streams.kstream.Materialized
+import spray.json.DefaultJsonProtocol
+
+import org.apache.kafka.common.serialization.Deserializer
+import org.apache.kafka.common.serialization.Serde
+import org.apache.kafka.common.serialization.Serdes
+import org.apache.kafka.common.serialization.Serializer
+import org.apache.kafka.streams.kstream.{Materialized, Consumed, Produced}
 import org.apache.kafka.streams.scala.ImplicitConversions._
 import org.apache.kafka.streams.scala._
 import org.apache.kafka.streams.scala.kstream._
 import org.apache.kafka.streams.{KafkaStreams, StreamsConfig, Topology}
 import org.slf4j.{Logger, LoggerFactory}
-
-import Serdes._
+// import Serdes._
 
 object Hello extends Greeting {
   println(greeting)
@@ -21,15 +28,21 @@ trait Greeting {
 }
 
 // POJOs for JSON schema
-class ProducerIntegers (
-  val randint: Int
-) {}
+sealed trait ApiModel
 
-class ProducerMessage (
-  val time: String,
-  val integers: ProducerIntegers
-) {}
+case class ProducerIntegers (
+  randint: Int
+) extends ApiModel
 
+case class ProducerMessage (
+  time: String,
+  integers: ProducerIntegers
+) extends ApiModel
+
+object ApiModel extends DefaultJsonProtocol {
+  implicit val ProducerIntegersFormat = jsonFormat1(ProducerIntegers)
+  implicit val ProducerMessageFormat = jsonFormat2(ProducerMessage)
+}
 
 // will be exposed as main exe in jar
 object TimestampEditApp extends App {
@@ -43,14 +56,13 @@ object TimestampEditApp extends App {
   }
 
   val builder: StreamsBuilder = new StreamsBuilder
-  val source: KStream[String, String] = builder.stream[String, String]("json-time-topic")
+  // val source: KStream[String, String] = builder.stream[String, String]("json-time-topic")
+  // val source: KStream[String, String] = builder.stream[String, String]("json-time-topic")(Consumed.`with`(Serdes.String, Serdes.String))
+  val source: KStream[String, ProducerMessage] = builder.stream[String, ProducerMessage]("json-time-topic")(Consumed.`with`(Serdes.String, new JsonSerde[ProducerMessage]))
 
-  def timeValueTweak(k: String, v: String): String = {
+  def timeValueTweak(k: String, v: ProducerMessage): ProducerMessage = {
     log.error(k)
-    if (k == "time") {
-      v.replace("Z", "+00:00")
-    }
-    else v
+    v
   }
 
   // def timeValueTweak(k: String, v: String) = if (k == "time") v.replace("Z", "+00:00") else v
@@ -59,7 +71,7 @@ object TimestampEditApp extends App {
     map {
       (key, value) => (key, timeValueTweak(key, value))
     }.
-    to("json-edited-time-topic")
+    to("json-edited-time-topic")(Produced.`with`(Serdes.String, new JsonSerde[ProducerMessage]))
 
   val topology: Topology = builder.build()
   val streams: KafkaStreams = new KafkaStreams(topology, props)

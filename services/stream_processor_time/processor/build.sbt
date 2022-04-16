@@ -7,10 +7,14 @@ ThisBuild / organizationName := "kafkastreamsplay"
 
 val kafkaVersion = "3.1.0"
 val slf4jVersion = "1.7.36"
+val sprayJsonVersion = "1.3.6"
+val AkkaVersion = "2.6.19"
 
 val streamDependencies = Seq(
   "org.apache.kafka" %% "kafka-streams-scala" % kafkaVersion,
-  "org.slf4j" % "slf4j-simple" % slf4jVersion
+  "org.slf4j" % "slf4j-simple" % slf4jVersion,
+  "io.spray" %% "spray-json" % sprayJsonVersion,
+  "com.typesafe.akka" %% "akka-actor-typed" % AkkaVersion
 )
 
 lazy val root = (project in file("."))

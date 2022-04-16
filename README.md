@@ -16,3 +16,8 @@ docker-compose build
 docker-compose up
 ```
 The producing and consuming of messages should be visible in the docker logs. It may take a couple of minutes for services to settle down, and previous messages to be flushed.
+
+On docker-compose up, containers and volumes will be created. After services have been stopped, the volumes can be cleared down using
+```
+docker volume prune
+```
