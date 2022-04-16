@@ -57,19 +57,11 @@ object TimestampEditApp extends App {
 
   val builder: StreamsBuilder = new StreamsBuilder
   // val source: KStream[String, String] = builder.stream[String, String]("json-time-topic")
-  // val source: KStream[String, String] = builder.stream[String, String]("json-time-topic")(Consumed.`with`(Serdes.String, Serdes.String))
   val source: KStream[String, ProducerMessage] = builder.stream[String, ProducerMessage]("json-time-topic")(Consumed.`with`(Serdes.String, new JsonSerde[ProducerMessage]))
 
-  def timeValueTweak(k: String, v: ProducerMessage): ProducerMessage = {
-    log.error(k)
-    v
-  }
-
-  // def timeValueTweak(k: String, v: String) = if (k == "time") v.replace("Z", "+00:00") else v
-
   source.
-    map {
-      (key, value) => (key, timeValueTweak(key, value))
+    mapValues {
+      v => ProducerMessage(v.time.replace("Z", "+00:00"), v.integers)
     }.
     to("json-edited-time-topic")(Produced.`with`(Serdes.String, new JsonSerde[ProducerMessage]))
 
